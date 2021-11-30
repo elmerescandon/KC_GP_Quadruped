@@ -13,10 +13,12 @@ p.setGravity(0,0,-9.81)
 planeId = p.loadURDF("plane.urdf")
 cubeStartPos = [0,0,1]
 cubeStartOrientation = p.getQuaternionFromEuler([0,0,0])
-boxId = p.loadURDF("samurai.urdf",cubeStartPos,cubeStartOrientation)
+boxId = p.loadURDF("r2d2.urdf",cubeStartPos,cubeStartOrientation)
 
 
-
+print("Information about the robot:")
+print(p.getNumJoints(boxId))
+print(p.getJointInfo(boxId,1))
 # Generate simulation 
 for i in range(10000): 
     p.stepSimulation()
