@@ -17,7 +17,7 @@ p.setTimeStep(1./500)
 
 # Load Quadruped and Settings - Enable collision between lower legs
 urdfFlags = p.URDF_USE_SELF_COLLISION
-quadruped = p.loadURDF("laikago_toes.urdf",[0,0,1.5],[0,0.5,0.5,0], flags = urdfFlags,useFixedBase=False)
+quadruped = p.loadURDF("Laikago/laikago_toes.urdf",[0,0,1.5],[0,0.5,0.5,0], flags = urdfFlags,useFixedBase=False)
 
 
 # Show info of each joint
