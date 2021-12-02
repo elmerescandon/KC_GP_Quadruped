@@ -1,0 +1,6 @@
+Front Right - Pata Delantera Derecha
+FR1_1: rpy="0 0 0" xyz="-0.0817145 0 0.242889"
+
+(HIP to SHOULDER) FR1_2: rpy="0 0 0" xyz="-0.053565 0 0"
+(SHOULDER to ELBOW) FR1_3: rpy="0 0 0" xyz="0.02069  -0.20833  -0.1422"
+(ELBOW to FOOT) FR1_EF: xyz="0 -0.25 -0.022"

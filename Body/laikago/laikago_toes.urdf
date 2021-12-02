@@ -1,37 +1,30 @@
 <?xml version="1.0" ?>
 <robot name="plane">
-
-  <!-- Chasis values -->
   <link name="chassis">
-    <contact>
-        <lateral_friction value="1"/>
-    </contact>
-      <inertial>
-        <origin rpy="0 0 0" xyz="0 0.03 0.043794"/>
-        <mass value="13.715"/>
-        <inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
-      </inertial>
-      <visual>
-        <origin rpy="0 0 0" xyz="0 0 0.043794"/>
-        <geometry>
-          <mesh filename="chassis.obj" scale="1 1 1"/>
-        </geometry>
-        <material name="white">
-          <color rgba="1 1 1 1"/>
-        </material>
-      </visual>
-      <collision>
-        <origin rpy="-1.57 0 0" xyz="0 0 0.043794"/>
-        <geometry>
-          <mesh filename="chassis_vhacd_mod.obj" scale="1 1 1"/>
-        </geometry>
-      </collision>
+  <contact>
+      <lateral_friction value="1"/>
+  </contact>
+    <inertial>
+      <origin rpy="0 0 0" xyz="0 0.03 0.043794"/>
+       <mass value="13.715"/>
+       <inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+    </inertial>
+    <visual>
+      <origin rpy="0 0 0" xyz="0 0 0.043794"/>
+      <geometry>
+        <mesh filename="chassis.obj" scale="1 1 1"/>
+      </geometry>
+       <material name="white">
+        <color rgba="1 1 1 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin rpy="-1.57 0 0" xyz="0 0 0.043794"/>
+      <geometry>
+        <mesh filename="chassis_vhacd_mod.obj" scale="1 1 1"/>
+      </geometry>
+    </collision>
   </link>
-
-  <!-- ============================================ -->
-  <!--  Front Right - Delantero derecho             -->
-  <!-- ============================================ -->
-
   <link name="FR_hip_motor">
     <contact>
       <lateral_friction value="1"/>
@@ -56,50 +49,44 @@
         <mesh filename="hip_motor_mirror.stl" scale="1 1 1"/>
       </geometry>
     </collision>
-  </link>
-  
-   
-  <!-- Joint del hombro -->
-  <joint name="FR_hip_motor_2_chassis_joint" type="continuous">
-  <axis xyz="0 0 -1"/>
-  <parent link="chassis"/>
-  <child link="FR_hip_motor"/>
-  <origin rpy="0 0 0" xyz="-0.0817145 0 0.242889"/>
-  <limit effort="100" velocity="100"/>
-  <joint_properties damping=".0" friction=".0"/>
+    </link>
+
+    <joint name="FR_hip_motor_2_chassis_joint" type="continuous">
+    <axis xyz="0 0 -1"/>
+    <parent link="chassis"/>
+    <child link="FR_hip_motor"/>
+    <origin rpy="0 0 0" xyz="-0.0817145 0 0.242889"/>
+    <limit effort="100" velocity="100"/>
+    <joint_properties damping=".0" friction=".0"/>
   </joint>
 
+     <link name="FR_upper_leg">
+  <contact>
+      <lateral_friction value="1"/>
+  </contact>
+    <inertial>
+     <origin rpy="0 0 0" xyz="0 -0.04 -0.04"/>
+       <mass value="1.527"/>
+       <inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+    </inertial>
+       <visual>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <mesh filename="upper_leg_mirror.obj" scale="1 1 1"/>
+      </geometry>
+       <material name="white"/>
+    </visual>
 
-  
-  <!-- Link de la pata delantera derecha larga -->
-  <link name="FR_upper_leg">
-    <contact>
-        <lateral_friction value="1"/>
-    </contact>
-      <inertial>
-      <origin rpy="0 0 0" xyz="0 -0.04 -0.04"/>
-        <mass value="1.527"/>
-        <inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
-      </inertial>
-        <visual>
-        <origin rpy="0 0 0" xyz="0 0 0"/>
-        <geometry>
-          <mesh filename="upper_leg_mirror.obj" scale="1 1 1"/>
-        </geometry>
-        <material name="white"/>
-      </visual>
+    <collision>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <mesh filename="upper_leg_right_vhacd.obj" scale="1 1 1"/>
+      </geometry>
+    </collision>
 
-      <collision>
-        <origin rpy="0 0 0" xyz="0 0 0"/>
-        <geometry>
-          <mesh filename="upper_leg_right_vhacd.obj" scale="1 1 1"/>
-        </geometry>
-      </collision>
-  </link>
+    </link>
 
-
-  <!-- Joint hombro con conexión -->
-  <joint name="FR_upper_leg_2_hip_motor_joint" type="continuous">
+    <joint name="FR_upper_leg_2_hip_motor_joint" type="continuous">
     <axis xyz="1 0 0"/>
     <parent link="FR_hip_motor"/>
     <child link="FR_upper_leg"/>
@@ -108,12 +95,10 @@
     <joint_properties damping=".0" friction=".0"/>
   </joint>
 
-
-  <!-- Link de pata delatera derecha baja -->
-  <link name="FR_lower_leg">
-    <contact>
-        <lateral_friction value="1"/>
-    </contact>
+     <link name="FR_lower_leg">
+  <contact>
+      <lateral_friction value="1"/>
+  </contact>
     <inertial>
       <origin rpy="0 0 0" xyz="0 -0.16 -0.02"/>
        <mass value="0.241"/>
@@ -133,10 +118,8 @@
         <mesh filename="lower_leg_3.stl" scale="1 1 1"/>
       </geometry>
     </collision>
-  </link>
-  
-  <!-- Joint del codo pata delantera derecha -->
-  <joint name="FR_lower_leg_2_upper_leg_joint" type="continuous">
+    </link>
+    <joint name="FR_lower_leg_2_upper_leg_joint" type="continuous">
     <axis xyz="1 0 0"/>
     <parent link="FR_upper_leg"/>
     <child link="FR_lower_leg"/>
@@ -147,77 +130,34 @@
   </joint>
 
 
-  <link name="toeFR">
-    <contact>
-      <friction_anchor/>
-      <stiffness value="30000.0"/>
-      <damping value="1000.0"/>
-      <spinning_friction value="0.1"/>
-      <lateral_friction value="1.0"/>
-    </contact>
+   <link name="FL_hip_motor">
+  <contact>
+      <lateral_friction value="1"/>
+  </contact>
+    <inertial>
+     <origin rpy="0 0 0" xyz="-.02 0 0"/>
+       <mass value="1.095"/>
+       <inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+    </inertial>
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <sphere radius="0.0"/>
+        <mesh filename="hip_motor.obj" scale="1 1 1"/>
       </geometry>
-      <material name="white"/>
+       <material name="white">
+      </material>
     </visual>
+
     <collision>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <sphere radius="0.03"/>
+        <mesh filename="hip_motor.stl" scale="1 1 1"/>
       </geometry>
     </collision>
-    <inertial>
-      <mass value="0.1"/>
-      <inertia ixx="0.000025" ixy="0" ixz="0" iyy="0.000025" iyz="0" izz="0.000025"/>
-    </inertial>
-  </link>
 
-  <!-- Joint Front Right -->
-  <joint name="jtoeFR" type="fixed">
-    <parent link="FR_lower_leg"/>
-    <child link="toeFR"/>
-    <origin xyz="0 -0.25 -0.022"/>
-    <dynamics damping="0.0" friction="0.0"/>
-  </joint>
+      </link>
 
-
-
-  <!-- ============================================ -->
-  <!--  Front Left - Delantero Izquierdo            -->
-  <!-- ============================================ -->
-
-  <link name="FL_hip_motor">
-    <contact>
-        <lateral_friction value="1"/>
-    </contact>
-      <inertial>
-      <origin rpy="0 0 0" xyz="-.02 0 0"/>
-        <mass value="1.095"/>
-        <inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
-      </inertial>
-      <visual>
-        <origin rpy="0 0 0" xyz="0 0 0"/>
-        <geometry>
-          <mesh filename="hip_motor.obj" scale="1 1 1"/>
-        </geometry>
-        <material name="white">
-        </material>
-      </visual>
-
-      <collision>
-        <origin rpy="0 0 0" xyz="0 0 0"/>
-        <geometry>
-          <mesh filename="hip_motor.stl" scale="1 1 1"/>
-        </geometry>
-      </collision>
-
-  </link>
-
-
-
-  <joint name="FL_hip_motor_2_chassis_joint" type="continuous">
+   <joint name="FL_hip_motor_2_chassis_joint" type="continuous">
     <axis xyz="0 0 1"/>
     <parent link="chassis"/>
     <child link="FL_hip_motor"/>
@@ -227,31 +167,32 @@
   </joint>
 
   <link name="FL_upper_leg">
-    <contact>
-        <lateral_friction value="1"/>
-    </contact>
-      <inertial>
-        <origin rpy="0 0 0" xyz="0 -0.04 -0.04"/>
-        <mass value="1.527"/>
-        <inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
-      </inertial>
-      <visual>
-        <origin rpy="0 0 0" xyz="0 0 0"/>
-        <geometry>
+  <contact>
+      <lateral_friction value="1"/>
+  </contact>
+    <inertial>
+       <origin rpy="0 0 0" xyz="0 -0.04 -0.04"/>
+       <mass value="1.527"/>
+       <inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+    </inertial>
+     <visual>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
 
-          <mesh filename="upper_leg_left.obj" scale="1 1 1"/>
-        </geometry>
-        <material name="white">
-        </material>
-      </visual>
+        <mesh filename="upper_leg_left.obj" scale="1 1 1"/>
+      </geometry>
+       <material name="white">
+      </material>
+    </visual>
 
-      <collision>
-        <origin rpy="0 0 0" xyz="0 0 0"/>
-        <geometry>
-          <mesh filename="upper_leg_left_vhacd.obj" scale="1 1 1"/>
-        </geometry>
-      </collision>
-  </link>
+     <collision>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <mesh filename="upper_leg_left_vhacd.obj" scale="1 1 1"/>
+      </geometry>
+    </collision>
+
+    </link>
 
 
   <joint name="FL_upper_leg_2_hip_motor_joint" type="continuous">
@@ -265,31 +206,31 @@
 
 
   <link name="FL_lower_leg">
-    <contact>
-        <lateral_friction value="1"/>
-    </contact>
+  <contact>
+      <lateral_friction value="1"/>
+  </contact>
     <inertial>
       <origin rpy="0 0 0" xyz="0 -0.16 -0.02"/>
-      <mass value="0.241"/>
-      <inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+       <mass value="0.241"/>
+       <inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
     </inertial>
-    <visual>
+   <visual>
       <origin rpy="0 1.57079 0" xyz="0 0 0"/>
       <geometry>
         <mesh filename="lower_leg3.obj" scale="1 1 1"/>
       </geometry>
-      <material name="white">
-      </material>
+       <material name="white">
+       </material>
     </visual>
 
-    <collision>
+     <collision>
       <origin rpy="0 1.57079 0" xyz="0 0 0"/>
       <geometry>
         <mesh filename="lower_leg_3.stl" scale="1 1 1"/>
       </geometry>
-      </collision>
+    </collision>
 
-  </link>
+    </link>
 
   <joint name="FL_lower_leg_2_upper_leg_joint" type="continuous">
     <axis xyz="1 0 0"/>
@@ -300,55 +241,20 @@
     <joint_properties damping=".0" friction=".0"/>
   </joint>
 
-  <link name="toeFL">
-    <contact>
-      <friction_anchor/>
-      <stiffness value="30000.0"/>
-      <damping value="1000.0"/>
-      <spinning_friction value="0.1"/>
-      <lateral_friction value="1.0"/>
-    </contact>
-    <visual>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-      <geometry>
-        <sphere radius="0.0"/>
-      </geometry>
-      <material name="white"/>
-    </visual>
-    <collision>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-      <geometry>
-        <sphere radius="0.03"/>
-      </geometry>
-    </collision>
+
+
+
+
+
+   <link name="RR_hip_motor">
+  <contact>
+      <lateral_friction value="1"/>
+  </contact>
     <inertial>
-      <mass value="0.1"/>
-      <inertia ixx="0.000025" ixy="0" ixz="0" iyy="0.000025" iyz="0" izz="0.000025"/>
+      <origin rpy="0 0 0" xyz="0.02 0 0"/>
+       <mass value="1.095"/>
+       <inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
     </inertial>
-  </link>
-
-  <joint name="jtoeFL" type="fixed">
-    <parent link="FL_lower_leg"/>
-    <child link="toeFL"/>
-    <origin xyz="0 -0.25 -0.022"/>
-    <dynamics damping="0.0" friction="0.0"/>
- </joint>
-
-
-  <!-- ============================================ -->
-  <!--  Rear Rigth - Trasero Derecha                -->
-  <!-- ============================================ -->
-
-
-  <link name="RR_hip_motor">
-    <contact>
-        <lateral_friction value="1"/>
-    </contact>
-      <inertial>
-        <origin rpy="0 0 0" xyz="0.02 0 0"/>
-        <mass value="1.095"/>
-        <inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
-      </inertial>
 
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
@@ -364,10 +270,10 @@
         <mesh filename="hip_motor_mirror.stl" scale="1 1 1"/>
       </geometry>
     </collision>
-  </link>
 
+    </link>
 
-  <joint name="RR_hip_motor_2_chassis_joint" type="continuous">
+    <joint name="RR_hip_motor_2_chassis_joint" type="continuous">
     <axis xyz="0 0 -1"/>
     <parent link="chassis"/>
     <child link="RR_hip_motor"/>
@@ -376,10 +282,10 @@
     <joint_properties damping=".0" friction=".0"/>
   </joint>
 
-  <link name="RR_upper_leg">
-    <contact>
-        <lateral_friction value="1"/>
-    </contact>
+     <link name="RR_upper_leg">
+  <contact>
+      <lateral_friction value="1"/>
+  </contact>
     <inertial>
      <origin rpy="0 0 0" xyz="0 -0.04 -0.04"/>
        <mass value="1.527"/>
@@ -400,9 +306,9 @@
       </geometry>
     </collision>
 
-  </link>
+    </link>
 
-  <joint name="RR_upper_leg_2_hip_motor_joint" type="continuous">
+    <joint name="RR_upper_leg_2_hip_motor_joint" type="continuous">
     <axis xyz="1 0 0"/>
     <parent link="RR_hip_motor"/>
     <child link="RR_upper_leg"/>
@@ -411,10 +317,10 @@
     <joint_properties damping=".0" friction=".0"/>
   </joint>
 
-  <link name="RR_lower_leg">
-    <contact>
-        <lateral_friction value="1"/>
-    </contact>
+     <link name="RR_lower_leg">
+  <contact>
+      <lateral_friction value="1"/>
+  </contact>
     <inertial>
       <origin rpy="0 0 0" xyz="0 -0.16 -0.02"/>
        <mass value="0.241"/>
@@ -427,15 +333,17 @@
       </geometry>
        <material name="white"/>
     </visual>
+
      <collision>
       <origin rpy="0 1.57079 0" xyz="0 0 0"/>
       <geometry>
         <mesh filename="lower_leg_3.stl" scale="1 1 1"/>
       </geometry>
     </collision>
-  </link>
 
-  <joint name="RR_lower_leg_2_upper_leg_joint" type="continuous">
+    </link>
+
+    <joint name="RR_lower_leg_2_upper_leg_joint" type="continuous">
     <axis xyz="1 0 0"/>
     <parent link="RR_upper_leg"/>
     <child link="RR_lower_leg"/>
@@ -444,69 +352,34 @@
     <joint_properties damping=".0" friction=".0"/>
   </joint>
 
-  <link name="toeRR">
-    <contact>
-      <friction_anchor/>
-      <stiffness value="30000.0"/>
-      <damping value="1000.0"/>
-      <spinning_friction value="0.1"/>
-      <lateral_friction value="1.0"/>
-    </contact>
+
+   <link name="RL_hip_motor">
+  <contact>
+      <lateral_friction value="1"/>
+  </contact>
+    <inertial>
+      <origin rpy="0 0 0" xyz="-.02 0 0"/>
+       <mass value="1.095"/>
+       <inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+    </inertial>
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <sphere radius="0.0"/>
+        <mesh filename="hip_motor.obj" scale="1 1 1"/>
       </geometry>
-      <material name="white"/>
+       <material name="white"/>
     </visual>
+
     <collision>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <sphere radius="0.03"/>
+        <mesh filename="hip_motor.stl" scale="1 1 1"/>
       </geometry>
     </collision>
-    <inertial>
-      <mass value="0.1"/>
-      <inertia ixx="0.000025" ixy="0" ixz="0" iyy="0.000025" iyz="0" izz="0.000025"/>
-    </inertial>
-  </link>
-  <joint name="jtoeRR" type="fixed">
-    <parent link="RR_lower_leg"/>
-    <child link="toeRR"/>
-    <origin xyz="0 -0.25 -0.022"/>
-    <dynamics damping="0.0" friction="0.0"/>
-  </joint>
 
-  <!-- ============================================ -->
-  <!--  Rear Left - Trasero Izquierda               -->
-  <!-- ============================================ -->
-  
-  <link name="RL_hip_motor">
-    <contact>
-        <lateral_friction value="1"/>
-    </contact>
-      <inertial>
-        <origin rpy="0 0 0" xyz="-.02 0 0"/>
-        <mass value="1.095"/>
-        <inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
-      </inertial>
-      <visual>
-        <origin rpy="0 0 0" xyz="0 0 0"/>
-        <geometry>
-          <mesh filename="hip_motor.obj" scale="1 1 1"/>
-        </geometry>
-        <material name="white"/>
-      </visual>
+      </link>
 
-      <collision>
-        <origin rpy="0 0 0" xyz="0 0 0"/>
-        <geometry>
-          <mesh filename="hip_motor.stl" scale="1 1 1"/>
-        </geometry>
-      </collision>
-  </link>
-
-  <joint name="RL_hip_motor_2_chassis_joint" type="continuous">
+   <joint name="RL_hip_motor_2_chassis_joint" type="continuous">
     <axis xyz="0 0 1"/>
     <parent link="chassis"/>
     <child link="RL_hip_motor"/>
@@ -517,9 +390,9 @@
   </joint>
 
   <link name="RL_upper_leg">
-    <contact>
-        <lateral_friction value="1"/>
-    </contact>
+  <contact>
+      <lateral_friction value="1"/>
+  </contact>
     <inertial>
       <origin rpy="0 0 0" xyz="0 -0.04 -0.04"/>
        <mass value="1.527"/>
@@ -540,7 +413,7 @@
       </geometry>
     </collision>
 
-  </link>
+    </link>
 
 
   <joint name="RL_upper_leg_2_hip_motor_joint" type="continuous">
@@ -621,9 +494,103 @@
     <dynamics damping="0.0" friction="0.0"/>
   </joint>
 
+  <link name="toeRR">
+    <contact>
+      <friction_anchor/>
+      <stiffness value="30000.0"/>
+      <damping value="1000.0"/>
+      <spinning_friction value="0.1"/>
+      <lateral_friction value="1.0"/>
+    </contact>
+    <visual>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <sphere radius="0.0"/>
+      </geometry>
+      <material name="white"/>
+    </visual>
+    <collision>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <sphere radius="0.03"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="0.1"/>
+      <inertia ixx="0.000025" ixy="0" ixz="0" iyy="0.000025" iyz="0" izz="0.000025"/>
+    </inertial>
+  </link>
+  <joint name="jtoeRR" type="fixed">
+    <parent link="RR_lower_leg"/>
+    <child link="toeRR"/>
+    <origin xyz="0 -0.25 -0.022"/>
+    <dynamics damping="0.0" friction="0.0"/>
+  </joint>
 
+  <link name="toeFL">
+    <contact>
+      <friction_anchor/>
+      <stiffness value="30000.0"/>
+      <damping value="1000.0"/>
+      <spinning_friction value="0.1"/>
+      <lateral_friction value="1.0"/>
+    </contact>
+    <visual>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <sphere radius="0.0"/>
+      </geometry>
+      <material name="white"/>
+    </visual>
+    <collision>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <sphere radius="0.03"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="0.1"/>
+      <inertia ixx="0.000025" ixy="0" ixz="0" iyy="0.000025" iyz="0" izz="0.000025"/>
+    </inertial>
+  </link>
+  <joint name="jtoeFL" type="fixed">
+    <parent link="FL_lower_leg"/>
+    <child link="toeFL"/>
+    <origin xyz="0 -0.25 -0.022"/>
+    <dynamics damping="0.0" friction="0.0"/>
+  </joint>
 
-
-
+  <link name="toeFR">
+    <contact>
+      <friction_anchor/>
+      <stiffness value="30000.0"/>
+      <damping value="1000.0"/>
+      <spinning_friction value="0.1"/>
+      <lateral_friction value="1.0"/>
+    </contact>
+    <visual>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <sphere radius="0.0"/>
+      </geometry>
+      <material name="white"/>
+    </visual>
+    <collision>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <sphere radius="0.03"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="0.1"/>
+      <inertia ixx="0.000025" ixy="0" ixz="0" iyy="0.000025" iyz="0" izz="0.000025"/>
+    </inertial>
+  </link>
+  <joint name="jtoeFR" type="fixed">
+    <parent link="FR_lower_leg"/>
+    <child link="toeFR"/>
+    <origin xyz="0 -0.25 -0.022"/>
+    <dynamics damping="0.0" friction="0.0"/>
+  </joint>
 </robot>
 
