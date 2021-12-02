@@ -1,6 +1,7 @@
 # Advanced Robotics Project
 ## Kinematic gait generation for the Mini-Cheetah robot
-## Authors: Joaquín Cornejo Lema and Raúl Escandón Tufino
+
+### Authors: Joaquín Cornejo Lema and Raúl Escandón Tufino
 
 
 
