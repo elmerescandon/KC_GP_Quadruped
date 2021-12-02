@@ -1,0 +1,63 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+import rospy
+from sensor_msgs.msg import JointState
+from utils.markers import *
+from utils.mc_legs import *
+
+import tf
+
+# Creación de nodo
+rospy.init_node('leg_test')
+
+# Publicar al tópico de articulaciones
+pub = rospy.Publisher('/joint_states',JointState,queue_size=10)
+
+	
+# Joint names 
+jnames = ['RL_hip_joint', 'RL_thigh_joint', 'RL_calf_joint', 'FL_hip_joint', 'FL_thigh_joint', 'FL_calf_joint',
+  'RR_hip_joint', 'RR_thigh_joint', 'RR_calf_joint', 'FR_hip_joint', 'FR_thigh_joint', 'FR_calf_joint']
+
+# Load initial Values 
+q0 = np.zeros((12))
+
+# Load initial vector value from leg
+q_leg= np.zeros((3))
+
+
+# q0[9:12] = q_leg - Front Right (FR)
+# q0[3:6] = q_leg - Front Left (FL)
+# q0[6:9] = q_leg - Rear Right (RR)
+# q0[0:3] = q_leg - Rear Left (RL)
+
+
+# Ball markers 
+bmarker1 = BallMarker(color['RED'])
+
+
+# Creación del mensaje a enviar 
+joints = JointState()
+joints.name = jnames 
+joints.position = q0
+
+rate = rospy.Rate(100)
+
+
+
+while not rospy.is_shutdown():
+	joints.header.stamp = rospy.Time.now()
+	q_leg = q_leg + 0.01 
+	joints.position = q0
+	pub.publish(joints)
+
+	# Pata 1: Superior Izquierda (q1)
+	# q0[9:12] = q_leg # FR 
+	# q0[3:6] = q_leg # FL
+	# q0[6:9] = q_leg # RR
+	q0[0:3] = q_leg # RL
+
+	leg_pos = fk_RL(q_leg) # fk_RR(q_leg) fk_FL(q_leg) fk_FR(q_leg)
+	bmarker1.position(leg_pos)
+
+	rate.sleep()
