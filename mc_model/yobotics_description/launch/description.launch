@@ -1,0 +1,23 @@
+<launch>
+    <arg name="description_name"           default="robot_description"/>
+    <arg name="description_file"           default="$(find yobotics_description)/xacro/robot_with_kinect.xacro"/>
+    <arg name="user_debug"           default="false"/>
+
+    <param name="$(arg description_name)" textfile="$(arg description_file)"/>
+    <param name="robot_description"
+           command="$(find xacro)/xacro --inorder '$(arg description_file)' DEBUG:=$(arg user_debug)"/>
+
+    <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" respawn="false" output="screen">
+        <!-- <param name="use_tf_static"     value="true"/> -->
+        <!-- <param name="publish_frequency" value="200"/> -->
+        <remap from="robot_description" to="$(arg description_name)"/>
+    </node>
+
+    <node type="rviz" name="rviz" pkg="rviz" args="-d $(find yobotics_description)/rviz/urdf_viewer.rviz" />
+
+    <!-- <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher"> -->
+    <!-- <param name="/use_gui" value="false"/>
+        <rosparam param="/source_list">[yobotics/joint_states]</rosparam> -->
+    <!-- </node> -->
+
+</launch>
