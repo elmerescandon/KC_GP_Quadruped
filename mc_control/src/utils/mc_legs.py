@@ -8,8 +8,8 @@ import numpy as np
 
 # Obtain from DH parameters
 A = 0.077476 # Thigh offset * -1 
-B = 0.2115
-C = 0.2309
+B = 0.2115 # Thigh to Scalp offset
+C = 0.2309 # Scalp to toe offset
 
 # Transform from base to toe
 leg_offset_x = 0.196
@@ -136,6 +136,51 @@ def fk_RL(q,type = 'tran',joint = 3, group=False):
             return T[joint]
 
 
+def fk_robot(q,leg,type='tran',joint=3,group=False): 
+    if leg == 'FR':
+        return fk_FR(q,type,joint,group)
+    elif leg == 'FL':
+        return fk_FL(q,type,joint,group)
+    elif leg == 'RR': 
+        return fk_RR(q,type,joint,group)
+    elif leg == 'RL':
+        return fk_RL(q,type,joint,group)
+    
+
 # =================================
 # Jacobian calculations
 # ================================
+
+def Jgeom_leg(q,leg,joint=3):
+    """
+    Function that calculates the Geometric Jacobian for Linear and 
+    Angular velocities of the robot from the base to the desired joint 
+    """
+    T_ref = fk_robot(q,leg,'tran',joint,True)
+    n_t = len(T_ref)
+
+    J = np.zeros((6,n_t-1))
+
+    for n in range(1,n_t):
+        z_0n = T_ref[n-1][0:3,2]
+        p_0n = T_ref[n-1][0:3,3]
+        Jv = crossproduct(z_0n, T_ref[n_t-1][0:3,3]- p_0n)
+        Jw = z_0n        
+        J[:,n-1] = np.hstack((Jv,Jw))
+
+    return J
+
+
+
+def Jan_leg(q,leg,joint=3): 
+    """
+    Function that calculates the Analytical Jacobian for the Cartesian and 
+    Quaternion representation based on the desired joint of one leg
+    """
+
+    JT = np.zeros((joint,7))
+    
+    T = fk_robot(q,leg,'tran',joint,False)
+
+
+
