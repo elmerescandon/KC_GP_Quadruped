@@ -93,9 +93,6 @@ def crossproduct(a, b):
     """
     Returns the cross product between two vectors
     """
-    # x = np.array([[a[1]*b[2] - a[2]*b[1]],
-    #               [a[2]*b[0] - a[0]*b[2]],
-    #               [a[0]*b[1] - a[1]*b[0]]])
     x = np.array([a[1]*b[2] - a[2]*b[1],
                   a[2]*b[0] - a[0]*b[2],
                   a[0]*b[1] - a[1]*b[0]])    
@@ -114,20 +111,51 @@ def quaternionMult(q1, q2):
     qout[3] = -q1[2] * q2[1] + q1[1] * q2[2] + q1[0] * q2[3] + q1[3] * q2[0]
     return qout
 
-# def rot2quaternion(R):
-#     """
-#     Function that returns the quaternion unit from a Rotation Matrix
-#     No considera la forma adicional de operar cuando el angulo es 180
-#     Lo de vuelve de la forma:
-#     q = (w,ex,ey,ez)
-#     """
-#     omega = ((1+R[0, 0]+R[1, 1]+R[2, 2])**0.5)*0.5
-#     if omega == 0: 
-#         quat = Quaternion(matrix=R)
-#         q = np.array([q[0],q[1],q[2],q[3]])
-#         return q
-#     else :
-#         ex = (1/(4*omega))*(R[2, 1]-R[1, 2])
-#         ey = (1/(4*omega))*(R[0, 2]-R[2, 0])
-#         ez = (1/(4*omega))*(R[1, 0]-R[0, 1])
-#         return np.array([omega,ex,ey,ez])
+def rot2quaternion(R):
+    """
+    Function that returns the quaternion unit from a Rotation Matrix
+    Output shown as:
+    q = (ex,ey,ez,w)
+    Obtained from:  https://www.euclideanspace.com/maths/geometry/rotations/conversions/matrixToQuaternion/
+    """
+    trace = R[0,0] + R[1,1] + R[2,2]
+
+    if trace>0:
+        s = 0.5/np.sqrt(trace + 1.0)
+        w = 0.25/s
+        x = ( R[2,1] - R[1,2] )*s 
+        y = ( R[0,2] - R[2,0] )*s
+        z = ( R[1,0] - R[0,1] )*s
+    else: 
+        if (R[0,0] > R[1,1] ) and (R[0,0] > R[2,2]):
+            s = 2.0*np.sqrt(1.0 + R[0,0] - R[1,1] - R[2,2] )
+            w = (R[2,1] - R[1,2])/s
+            x = 0.25*s
+            y = (R[0,1] + R[1,0])/s 
+            z = (R[0,2] + R[2,0])/s
+        
+        elif R[1,1] > R[2,2]:
+            s = 2.0*np.sqrt(1.0 + R[1,1] - R[0,0] - R[2,2])
+            w = (R[0,2] - R[2,0])/s
+            x = (R[0,1] + R[1,0])/s
+            y = 0.25*s
+            z = (R[1,2] + R[2,1])/s
+        else: 
+            s = 2.0*np.sqrt(1.0 + R[2,2] - R[0,0] - R[1,1])
+            w = (R[1,0] - R[0,1])/s
+            x = (R[0,2] + R[2,0])/s
+            y = (R[1,2] + R[2,1])/s
+            z = 0.25*s
+    
+    return np.array([w,x,y,z])
+
+def TQb(quat): 
+    w = quat[0]
+    x = quat[1]
+    y = quat[2]
+    z = quat[3]
+
+    T = 2*np.array([[-x,w,-z,y],
+                    [-y,z,w,-x],
+                    [-z,-y,x,w]])
+    return T

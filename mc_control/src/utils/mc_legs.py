@@ -1,6 +1,7 @@
 # Import libraries
 from fr_utils import *
 import numpy as np
+from copy import copy
 
 # ==========================
 # Constants for the robot
@@ -172,15 +173,28 @@ def Jgeom_leg(q,leg,joint=3):
 
 
 
-def Jan_leg(q,leg,joint=3): 
+def Jan_leg(q,leg,joint=3, delta = 0.001): 
     """
     Function that calculates the Analytical Jacobian for the Cartesian and 
     Quaternion representation based on the desired joint of one leg
     """
 
     JT = np.zeros((joint,7))
-    
     T = fk_robot(q,leg,'tran',joint,False)
 
+    Q = rot2quaternion(T[0:3,0:3])
+    p = T[0:3,3]
+    pose = np.hstack((p,Q))
 
+    for i in range(3):
+        dq = copy(q)
+        dq[i] = dq[i] + delta
+        dT = fk_robot(dq,leg,'tran',joint,False)
+        dQ = rot2quaternion(dT[0:3,0:3])
+        dp = dT[0:3,3]
+        dpose = np.hstack((dp,dQ))
+
+        JT [i,:] = (dpose - pose)/delta
+
+    return JT.T
 
