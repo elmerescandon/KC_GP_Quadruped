@@ -150,7 +150,7 @@ def fk_robot(q,leg,type='tran',joint=3,group=False):
 
 # =================================
 # Jacobian calculations
-# ================================
+# =================================
 
 def Jgeom_leg(q,leg,joint=3):
     """
@@ -198,3 +198,49 @@ def Jan_leg(q,leg,joint=3, delta = 0.001):
 
     return JT.T
 
+
+# =================================
+# Kinematic Control for one leg
+# =================================
+
+def kincontrol_pos(x,xd,q,leg,dt,k_e=1,delta=0.001,verbose=False):
+    """
+    Function that returns the instantaneous joint values to
+    reach the desired 'x' position using Kinematic Control .
+    Inputs:
+     - x: Current cartesian position
+     - xd: Desired cartesian position
+     - q: Current joints position
+     - k: Gain controller (by default k = 1)  
+    """ 
+
+    k = 0.001
+    error =  x - xd
+    error_dot = -k_e*error
+    Je = Jan_leg(q,leg)[0:3,:]
+
+    Je_rank = np.linalg.matrix_rank(Je, tol=0.001)
+
+    # Calculate the Jacobian to obtain the desired velocity for each joint
+    if Je_rank < 3: 
+        q_dot = (Je.T).dot(  np.linalg.pinv(   Je.dot(Je.T) + (k**2)*np.eye(3)  )  ).dot(error_dot)
+    else: 
+        q_dot = np.linalg.pinv(Je).dot(error_dot)
+
+    # Update joint values
+    q_out = q + q_dot*dt
+    x_out = fk_robot(q,leg,'pos')
+
+    # Miscellanous
+    if verbose: 
+        print("Error position: %s"%error)
+        print("Jacobian rank: %s"%Je_rank)
+        print("Jacobian values:")
+        print(Je) 
+    
+    if np.linalg.norm(error) < delta:
+        stop_cond = True
+    else: 
+        stop_cond = False
+
+    return q_out, x_out,stop_cond

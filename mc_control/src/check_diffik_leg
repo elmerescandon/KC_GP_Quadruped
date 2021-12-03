@@ -19,30 +19,49 @@ jnames = ['RL_hip_joint', 'RL_thigh_joint', 'RL_calf_joint', 'FL_hip_joint', 'FL
 # Load initial Values 
 q0 = np.zeros((12))
 
+xd = np.array([0.4172, -0.308325, -0.293062])
+
 # Load initial vector value from leg
 q_leg= np.zeros((3))
-
+leg_pos = fk_robot(q_leg,'FR','pos')
+marker_pose = fk_robot(q_leg,'FR')
 # Ball markers 
 bmarker1 = BallMarker(color['RED'])
 
 # Create the message 
 joints = JointState()
-joints.name = jnames 
-joints.position = q0
+joints.name = jnames
 
+# Publish the initial state
+joints.header.stamp = rospy.Time.now()
+joints.position = q0
+pub.publish(joints)
+bmarker1.position(marker_pose)
+
+
+f = 100.0
+dt = 1./f
 rate = rospy.Rate(100)
 
 while not rospy.is_shutdown():
 	joints.header.stamp = rospy.Time.now()
-	q_leg = q_leg + 0.01 
 	joints.position = q0
 	pub.publish(joints)
-	# q0[9:12] = q_leg # FR 
+
+	# Front Right Leg
+	q0[9:12] = q_leg # FR ow 
+	q_leg, leg_pos,stop_cond = kincontrol_pos(leg_pos,xd,q_leg,'FR',dt,verbose=1)
+
+	if stop_cond:
+		break
+
 	# q0[3:6] = q_leg # FL
 	# q0[6:9] = q_leg # RR
-	q0[0:3] = q_leg # RL
+	# q0[0:3] = q_leg # RL
 
-	leg_pos = fk_RL(q_leg) # fk_RR(q_leg) fk_FL(q_leg) fk_FR(q_leg)
-	bmarker1.position(leg_pos)
+	# leg_pos = fk_RL(q_leg) # fk_RR(q_leg) fk_FL(q_leg) fk_FR(q_leg)
+	
+	marker_pose = fk_robot(q_leg,'FR')
+	bmarker1.position(marker_pose)
 
 	rate.sleep()
