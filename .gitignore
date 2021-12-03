@@ -4,3 +4,9 @@ Tutorial/data1.txt
 humanoidTimings.json_0.json
 visualShapeBench.json_0.json
 timings_0.json
+
+mc_control/src/utils/__pycache__
+mc_control/src/utils/__init__.pyc
+mc_control/src/utils/fr_utils.pyc
+mc_control/src/utils/markers.pyc
+mc_control/src/utils/mc_legs.pyc
