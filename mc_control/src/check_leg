@@ -16,8 +16,11 @@ pub = rospy.Publisher('/joint_states',JointState,queue_size=10)
 
 	
 # Joint names 
-jnames = ['RL_hip_joint', 'RL_thigh_joint', 'RL_calf_joint', 'FL_hip_joint', 'FL_thigh_joint', 'FL_calf_joint',
-  'RR_hip_joint', 'RR_thigh_joint', 'RR_calf_joint', 'FR_hip_joint', 'FR_thigh_joint', 'FR_calf_joint']
+jnames = ['RL_hip_joint', 'RL_thigh_joint', 'RL_calf_joint', 
+		  'FL_hip_joint', 'FL_thigh_joint', 'FL_calf_joint',
+   		  'RR_hip_joint', 'RR_thigh_joint', 'RR_calf_joint', 
+		  'FR_hip_joint', 'FR_thigh_joint', 'FR_calf_joint']
+
 
 # Load initial Values 
 q0 = np.zeros((12))
@@ -50,12 +53,12 @@ while not rospy.is_shutdown():
 	q_leg = q_leg + 0.01 
 	joints.position = q0
 	pub.publish(joints)
-	# q0[9:12] = q_leg # FR 
+	q0[9:12] = q_leg # FR 
 	# q0[3:6] = q_leg # FL
 	# q0[6:9] = q_leg # RR
-	q0[0:3] = q_leg # RL
+	# q0[0:3] = q_leg # RL
 
-	leg_pos = fk_RL(q_leg) # fk_RR(q_leg) fk_FL(q_leg) fk_FR(q_leg)
+	leg_pos = fk_FR(q_leg)  #   fk_FL(q_leg) fk_RL(q_leg) fk_RR(q_leg)
 	bmarker1.position(leg_pos)
 
 	rate.sleep()
