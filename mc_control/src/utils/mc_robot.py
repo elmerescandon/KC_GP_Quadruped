@@ -91,9 +91,7 @@ class mini_cheetah:
     
 
     def leg_jacobian(self,leg):
-
         indx = self.joint_dic[leg]
-        print(indx)
         if leg=='RL':
             q_leg = self.q[7:10]
         elif leg=='FL':
@@ -133,3 +131,38 @@ class mini_cheetah:
     # ==========================================================
     # Tasks for the desired parts of the body
     # ==========================================================
+    # Position: Cartesian (x,y,z)
+    # Pose: Complete position (Cartesian) and orientation (Quaternion) - x,y,z,w,ex,ey,ez
+
+    def error_position_leg(self,pos_d,leg):     
+        # Considerate only error in the cartesian space  
+        return pos_d - self.leg_position(leg,'pos')
+
+    def error_position_base(self,pos_d):
+        return pos_d - self.q[0:3]
+
+    def error_pose_base(self,pose_d):
+        # Cartesian
+        pose_base = self.q[0:7]
+        e_pos = pose_d[0:3] - pose_base[0:3]
+
+        # Quaternion
+        Q_base = pose_base[3:7]
+        Q_d = pose_d[3:7]
+        Qe = diffQuat(Q_base,Q_d)
+
+        # Concatenate
+        e_ori = np.array([Qe[0]-1,Qe[1],Qe[2],Q[3]])
+        e_pose = np.concatenate((e_pos,e_ori))
+
+        return e_pose
+
+    def leg_jacobian_position(self,leg):
+         # Contribution of the three linear velocities from all the joints (3,19)
+        return self.leg_jacobian(leg)[0:3,:]
+    
+    def base_jacobian_position(self):
+        # The contribution in the Analytical and Geeometric velocities are the same
+        J = np.zeros((7,19))
+        J[0:3,0:3] = np.eye(3)
+        return J

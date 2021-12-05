@@ -1,0 +1,17 @@
+<launch> 
+
+
+    <param name="robot_description" command="$(find xacro)/xacro --inorder '$(find yobotics_description)/xacro/robot_with_kinect.xacro'" />
+ 
+    <arg name="frame" value="map"/>
+    <arg name="child_frame" value="trunk"/>
+
+    <node name="robot_pose_publisher" pkg="mc_control" type="robot_pose_publisher" args="_frame:=$(arg frame) _child_frame:=$(arg child_frame)">
+    </node>
+
+    <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" />
+
+    <node type="rviz" name="rviz" pkg="rviz" args="-d $(find yobotics_description)/rviz/urdf_viewer.rviz" />
+
+
+</launch>

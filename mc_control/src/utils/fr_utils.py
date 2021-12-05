@@ -185,3 +185,22 @@ def skew_matrix(p):
     return np.array([[0, -uz, uy],
                      [uz, 0, -ux],
                      [-uy, ux, 0]])
+    
+def diffQuat(Q,Qd):
+    w = Q[0]
+    x = Q[1]
+    y = Q[2]
+    z = Q[3]
+
+    wd = Qd[0]
+    xd = Qd[1]
+    yd = Qd[2]
+    zd = Qd[3]
+
+    we = wd*w + (np.resize(Qd[1:4],(3,1)).T).dot(Q[1:4])
+    ee = -wd*Q[1:4] + w*Qd[1:4] - crossproduct(Qd[1:4],Q[1:4])
+
+    print(we.shape)
+    print(ee.shape)
+
+    return np.concatenate((we,ee))
