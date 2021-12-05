@@ -29,10 +29,11 @@ q0 = np.zeros((12))
 q_leg= np.zeros((3))
 
 
-# q0[9:12] = q_leg - Front Right (FR)
+# q0[0:3] = q_leg - Rear Left (RL)
 # q0[3:6] = q_leg - Front Left (FL)
 # q0[6:9] = q_leg - Rear Right (RR)
-# q0[0:3] = q_leg - Rear Left (RL)
+# q0[9:12] = q_leg - Front Right (FR)
+
 
 
 # Ball markers 

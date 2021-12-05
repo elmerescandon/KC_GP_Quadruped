@@ -105,10 +105,10 @@ def quaternionMult(q1, q2):
     """
 
     qout = np.zeros(4)
-    qout[0] = -q1[1] * q2[1] - q1[2] * q2[2] - q1[3] * q2[3] + q1[0] * q2[0]
-    qout[1] = q1[0] * q2[1] - q1[3] * q2[2] + q1[2] * q2[3] + q1[1] * q2[0]
-    qout[2] = q1[3] * q2[1] + q1[0] * q2[2] - q1[1] * q2[3] + q1[2] * q2[0]
-    qout[3] = -q1[2] * q2[1] + q1[1] * q2[2] + q1[0] * q2[3] + q1[3] * q2[0]
+    qout[0] = -q1[1]*q2[1] - q1[2]*q2[2] - q1[3]*q2[3] + q1[0]*q2[0]
+    qout[1] =  q1[0]*q2[1] - q1[3]*q2[2] + q1[2]*q2[3] + q1[1]*q2[0]
+    qout[2] =  q1[3]*q2[1] + q1[0]*q2[2] - q1[1]*q2[3] + q1[2]*q2[0]
+    qout[3] = -q1[2]*q2[1] + q1[1]*q2[2] + q1[0]*q2[3] + q1[3]*q2[0]
     return qout
 
 def rot2quaternion(R):
@@ -159,3 +159,20 @@ def TQb(quat):
                     [-y,z,w,-x],
                     [-z,-y,x,w]])
     return T
+
+def quaternion2rot(Q):
+    '''
+    Function that returns the Rotation Matrix from a 
+    Quaternion. Check:
+    http://oramosp.epizy.com/teaching/212/fund-robotica/clases/2_Representaciones_Espaciales_II.pdf
+    '''
+    w = Q[0]
+    ex = Q[1]
+    ey = Q[2]
+    ez = Q[3]
+
+    R = np.array([[2*(w**2 + ex**2)-1 ,2*(ex*ey - w*ez)   ,2*(ex*ez + w*ey)], 
+                  [2*(ex*ey +  w*ez)  ,2*(w**2 + ey**2)-1 ,2*(ey*ez - w*ex),], 
+                  [2*(ex*ez - w*ey)   ,2*(ey*ez + w*ex)   ,2*(w**2 + ez**2)-1]])
+    
+    return R

@@ -6,7 +6,19 @@ from mc_legs import *
 q = np.array([-np.pi/6,-np.pi/6,0])
 
 T = fk_robot(q,'FR','pos')
-print(T)
+# print(T)
+
+
+Q = np.array([0.766,0.272,0.521,0.261])
+
+R = quaternion2rot(Q)
+print(R)
+
+Q_n = rot2quaternion(R)
+print(Q_n)
+
+
+
 # Q = rot2quaternion(T[0:3,0:3])
 # Q_b = TQb(Q)
 
