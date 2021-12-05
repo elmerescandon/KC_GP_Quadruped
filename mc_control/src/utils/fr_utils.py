@@ -176,3 +176,12 @@ def quaternion2rot(Q):
                   [2*(ex*ez - w*ey)   ,2*(ey*ez + w*ex)   ,2*(w**2 + ez**2)-1]])
     
     return R
+
+def skew_matrix(p):
+
+    ux = p[0]
+    uy = p[1]
+    uz = p[2]
+    return np.array([[0, -uz, uy],
+                     [uz, 0, -ux],
+                     [-uy, ux, 0]])

@@ -24,11 +24,24 @@ class mini_cheetah:
         # Velocities
         self.q_dot = np.zeros((7 + 12)) # Base: 3 Position + 4 Orientation, Legs: 12 Joints
 
-    def base_position(self):
-        return self.x_b 
-    
+        # Miscellanous
+        self.joint_dic = {'RL':[7,10],
+                          'FL':[10,13], 
+                          'RR':[13,16], 
+                          'FR':[16,19]}
 
-    # Similar to functions created by Oscar Ramos Floating base example
+    def step_update(self,q): 
+        self.q = q
+
+    def base_position(self):
+        return self.q[0:7] 
+
+    # ==========================================================
+    # Operations to obtain the pose and velocities of the robot
+    # ==========================================================
+    # Inspired on functions created by Oscar Ramos Floating base example
+
+
     def leg_position(self,leg,type='tran'): 
         '''
         Function that returns the position of the toe from the interial
@@ -53,21 +66,21 @@ class mini_cheetah:
         T_Bi = fk_robot(q_leg,leg)
         p_Bi = T_Bi[0:3,3]
         R_Bi = T_Bi[0:3,0:3]
-        Q_Bi = quaternion2rot(R_Bi)
+        Q_Bi = rot2quaternion(R_Bi)
 
         # Calculate position of the leg from the inertial frame
         p_Ii = R_IB.dot(p_Bi) + p_b
         R_Ii = R_IB.dot(R_Bi)
 
-        # Calculate Orientation ´´´´
+        # Calculate Orientation 
         Q_Ii =  quaternionMult(Q_b,Q_Bi)
-        x_leg = np.concatenate(p_Ii,Q_Ii)
+        x_leg = np.concatenate((p_Ii,Q_Ii))
 
         # Transform Matrix
         T_Ii = np.zeros((4,4))
         T_Ii[0:3,0:3]= R_Ii
         T_Ii[0:3,3] = p_Ii
-
+        T_Ii[3,3] = 1
 
         if type=='full':
             return x_leg
@@ -76,15 +89,18 @@ class mini_cheetah:
         elif type == 'tran':
             return T_Ii
     
-    def leg_Jacobian(self,leg):
 
-        if leg == 'RL':
+    def leg_jacobian(self,leg):
+
+        indx = self.joint_dic[leg]
+        print(indx)
+        if leg=='RL':
             q_leg = self.q[7:10]
-        elif leg == 'FL':
+        elif leg=='FL':
             q_leg = self.q[10:13]
-        elif leg == 'RR':
+        elif leg=='RR':
             q_leg = self.q[13:16]
-        elif leg == 'FR':
+        elif leg=='FR':
             q_leg = self.q[16:19] 
         
         # Twist of the Leg using the Inertial frame
@@ -92,7 +108,28 @@ class mini_cheetah:
 
         # Velocity of the floating base
         p_b = self.q[0:3]
-        T_Ii = self.leg_position(q_leg,leg)
+        T_Ii = self.leg_position(leg)
+        p_Ii = T_Ii[0:3,3]
+        Q_b = self.q[3:7]
+        TQ = TQb(Q_b)
+        p_skew = skew_matrix(p_b - p_Ii)
+
+        # Rotation matrix from base to Inertial frame
+        R_IB = quaternion2rot(Q_b)
+
+        # Calculate Jacobian Matrix of the leg from the base frame
+        Jgleg = Jgeom_leg(q_leg,leg)
+
+        # Provide values to Jacobian matrix
+        J[0:3,0:3] = np.eye(3)
+        J[0:3,3:7] = p_skew.dot(TQ)
+        J[3:6,3:7] = TQ
+        J[0:3,indx[0]:indx[1]] = R_IB.dot(Jgleg[0:3,:]) # Linear Velocity Twist
+        J[3:6,indx[0]:indx[1]] = R_IB.dot(Jgleg[3:6,:]) # Angular Velocity Twist
+
+        return J
 
 
-
+    # ==========================================================
+    # Tasks for the desired parts of the body
+    # ==========================================================
