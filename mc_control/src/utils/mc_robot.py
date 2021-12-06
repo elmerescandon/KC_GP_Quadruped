@@ -82,6 +82,7 @@ class mini_cheetah:
         T_Ii[0:3,3] = p_Ii
         T_Ii[3,3] = 1
 
+
         if type=='pose':
             return x_leg
         elif type=='pos':
