@@ -13,7 +13,7 @@ class BallMarker(object):
         transparency and scale scales the size of the ball
         """
         # reference_frame = rospy.get_param('reference_frame','/map')
-        reference_frame = rospy.get_param('reference_frame','/trunk')
+        reference_frame = rospy.get_param('reference_frame','/map')
         self.marker_pub = rospy.Publisher("visualization_marker", Marker,
                                           queue_size=10)
         self.marker = Marker()

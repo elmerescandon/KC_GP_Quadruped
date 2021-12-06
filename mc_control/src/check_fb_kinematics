@@ -1,0 +1,65 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+import rospy
+from sensor_msgs.msg import JointState
+from utils.markers import *
+from utils.mc_legs import *
+from utils.mc_robot import mini_cheetah
+import numpy as np
+
+
+# Node Creation 
+rospy.init_node('mc_fb_test')
+
+# Publish the joint states
+pub = rospy.Publisher('/joint_states',JointState,queue_size=10)
+
+# Joint names 
+jnames = [ 'x','y','z','w','ex','ey','ez',
+          'RL_hip_joint', 'RL_thigh_joint', 'RL_calf_joint', 
+		  'FL_hip_joint', 'FL_thigh_joint', 'FL_calf_joint',
+   		  'RR_hip_joint', 'RR_thigh_joint', 'RR_calf_joint', 
+		  'FR_hip_joint', 'FR_thigh_joint', 'FR_calf_joint']
+
+
+# Load initial Values 
+x_b0 = np.array([0,0,0.4424,1,0,0,0])
+q_legs0 = np.array([0,0,0, # RL
+                    0,0,0, # FL
+                    0,0,0, # RR
+                    -np.pi/6,0,-np.pi/3]) # FR
+q0 = np.concatenate((x_b0,q_legs0))
+
+# Ball markers 
+bmarker1 = BallMarker(color['RED'])
+
+# Create the message 
+joints = JointState()
+joints.name = jnames 
+joints.position = q0
+
+# Load initial vector value from leg
+q_leg= np.zeros((3))
+# Z = 0.4424
+# q0[7:10] = q_leg - Rear Left (RL)
+# q0[10:13] = q_leg - Front Left (FL)
+# q0[13:16] = q_leg - Rear Right (RR)
+# q0[16:19] = q_leg - Front Right (FR)
+
+# Initialize the mini_cheetah class
+robot = mini_cheetah()
+robot.step_update(q0)
+
+pos_fr0 = robot.leg_position('FR',type='pos')
+
+# Configuration of the loop
+rate = rospy.Rate(100)
+
+while not rospy.is_shutdown():
+
+    joints.header.stamp = rospy.Time.now()
+    joints.position = q0
+    pub.publish(joints)
+    bmarker1.position(robot.leg_position('FR'))
+    rate.sleep()

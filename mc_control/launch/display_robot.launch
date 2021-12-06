@@ -11,7 +11,8 @@
 
     <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" />
 
-    <node type="rviz" name="rviz" pkg="rviz" args="-d $(find yobotics_description)/rviz/urdf_viewer.rviz" />
+    <arg name="config_file" value="$(find mc_control)/config/mc_config.rviz"/>
+    <node type="rviz" name="rviz" pkg="rviz" args="-d $(arg config_file)" />
 
 
 </launch>
