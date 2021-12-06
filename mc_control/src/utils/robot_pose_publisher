@@ -2,7 +2,7 @@
 #
 # Listen to TransformStamped messages and publish them to tf setting the pose
 # of the robot base (contained in the first 7 elements of joint_states).  
-#
+# Obtained from: https://github.com/oscar-ramos/freebase-example
 
 import roslib
 import rospy

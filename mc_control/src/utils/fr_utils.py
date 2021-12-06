@@ -115,7 +115,7 @@ def rot2quaternion(R):
     """
     Function that returns the quaternion unit from a Rotation Matrix
     Output shown as:
-    q = (ex,ey,ez,w)
+    q = (w,ex,ey,ez)
     Obtained from:  https://www.euclideanspace.com/maths/geometry/rotations/conversions/matrixToQuaternion/
     """
     trace = R[0,0] + R[1,1] + R[2,2]
