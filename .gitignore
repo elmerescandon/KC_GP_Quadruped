@@ -11,3 +11,9 @@ mc_control/src/utils/fr_utils.pyc
 mc_control/src/utils/markers.pyc
 mc_control/src/utils/mc_legs.pyc
 mc_control/src/utils/mc_robot.pyc
+mc_control/src/utils/mc_taskcontrol.pyc
+
+mc_control/src/utils/test_class_task.py
+mc_control/src/utils/test_class_task.pyc
+
+mc_control/src/check_fb_task_control_old

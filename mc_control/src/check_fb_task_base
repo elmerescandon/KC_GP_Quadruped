@@ -1,0 +1,152 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+import rospy
+from sensor_msgs.msg import JointState
+from utils.markers import *
+from utils.mc_legs import *
+from utils.mc_robot import mini_cheetah
+from utils.mc_taskcontrol import mc_controller
+
+import numpy as np
+from cvxopt import solvers
+from cvxopt import matrix
+from copy import copy
+from cvxopt import spmatrix
+
+
+
+# Node Creation 
+rospy.init_node('mc_fb_test')
+
+# Publish the joint states
+pub = rospy.Publisher('/joint_states',JointState,queue_size=10)
+
+# Joint names 
+jnames = [ 'x','y','z','w','ex','ey','ez',
+          'RL_hip_joint', 'RL_thigh_joint', 'RL_calf_joint', 
+		  'FL_hip_joint', 'FL_thigh_joint', 'FL_calf_joint',
+   		  'RR_hip_joint', 'RR_thigh_joint', 'RR_calf_joint', 
+		  'FR_hip_joint', 'FR_thigh_joint', 'FR_calf_joint']
+
+
+# Load initial Values 
+# 0.40075673
+# 0.4424
+x_b0 = np.array([0,0,0.40075673,1,0,0,0])
+# q_legs0 = np.array([0,0,0, # RL
+#                     0,0,0, # FL
+#                     0,0,0, # RR
+#                     0,0,0]) # FR
+q_legs0 = np.array([0,0,-0.61, # RL
+                    0,0,-0.61, # FL
+                    0,0,-0.61, # RR
+                    0,0,-0.61]) # FR
+q0 = np.concatenate((x_b0,q_legs0))
+
+# Initialize the mini_cheetah class
+robot = mini_cheetah()
+robot.step_update(q0)
+
+# Ball markers 
+bmarker1 = BallMarker(color['RED'])
+
+# Create the message 
+joints = JointState()
+joints.name = jnames 
+joints.position = q0
+joints.header.stamp = rospy.Time.now()
+pub.publish(joints)
+
+# Obtain actual position
+pos_fr = robot.leg_position('FR',type='pos')
+pos_rr = robot.leg_position('RR',type='pos')
+pos_fl = robot.leg_position('FL',type='pos')
+pos_rl = robot.leg_position('RL',type='pos')
+pos_base = robot.base_position()
+
+# Obtain desired positions for each leg only two tasks 
+posd_fr = copy(pos_fr)
+# posd_fr[2] += 0.05
+# posd_fr[0] -= 0.05
+
+posd_rr = copy(pos_rr)
+posd_fl = copy(pos_fl)
+posd_rl = copy(pos_rl)
+posd_base = copy(pos_base)
+posd_base[2] -= 0.1
+
+
+T_posdrr = np.array([[1,0,0,posd_fr[0]], 
+                     [0,1,0,posd_fr[1]],
+                     [0,0,1,posd_fr[2]], 
+                     [1,0,0,0]])
+
+# Constants generated for the kinematic task control
+l = 5*[0.5]
+w = 5*[1.0]
+f = 100.0
+dt = 1./f
+control = mc_controller(l, w, dt,type_c='base')
+
+
+q_robot = copy(q0)
+
+# Configuration of the loop
+
+
+rate = rospy.Rate(f)
+
+while not rospy.is_shutdown():
+
+    # Calculate Error
+    # Obtain error for tasks 
+    e_1 = robot.error_position_leg(posd_fr,'FR')
+    e_2 = robot.error_position_leg(posd_rr,'RR')
+    e_3 = robot.error_position_leg(posd_fl,'FL')
+    e_4 = robot.error_position_leg(posd_rl,'RL')
+    e_b = robot.error_position_base(posd_base)
+
+    e = [e_1, e_2, e_3, e_4,e_b]
+
+    # Jacobian for each task
+    J_1 = robot.leg_jacobian_position('FR')
+    J_2 = robot.leg_jacobian_position('RR')
+    J_3 = robot.leg_jacobian_position('FL')
+    J_4 = robot.leg_jacobian_position('RL')
+    J_b = robot.base_jacobian_position()
+    
+    J = [J_1, J_2, J_3, J_4, J_b]
+
+
+    q_dot = control.apply_control(e,J,q_robot)
+
+    # =================================================
+    # Solve the quadratic problem - cvxopt
+    # =================================================
+ 
+    # Integrate rotation
+    Q_robot = q_robot[3:7]
+
+    # Integrate the orientation of the robot
+    w = np.dot(TQb(Q_robot), q_dot[3:7])
+    dth = np.linalg.norm(w)
+    if abs(dth)>1e-9:
+        u = w/dth
+        dQ = np.array([np.cos(dth*dt/2.0), u[0]*np.sin(dth*dt/2.0),
+                       u[1]*np.sin(dth*dt/2.0), u[2]*np.sin(dth*dt/2.0)])
+        Q = quaternionMult(dQ, q_robot[3:7])
+        q_robot[3:7] = Q    
+
+    q_robot[0:3] = q_robot[0:3] + dt*q_dot[0:3]
+    q_robot[7:] = q_robot[7:] + dt*q_dot[7:]
+
+    print(np.round(q_robot[0:3],4))
+    robot.step_update(q_robot)
+
+
+    joints.header.stamp = rospy.Time.now()
+    joints.position = q_robot
+    pub.publish(joints)
+    bmarker1.position(T_posdrr)
+    rate.sleep() 

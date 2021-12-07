@@ -10,17 +10,18 @@ from mc_robot import *
 
 
 Z = 0.4424
-q_0 = np.array([0., 0., 0.4424, 
+q_0 = np.array([0., 0., 0, 
                 1., 0., 0., 0.,
-                0,0,0, 0,0,0, 0,0,0, 0,0,0])
+                0,0,-0.61, 0,0,-0.61, 0,0,-0.61, 0,0,-0.61])
 
 robot = mini_cheetah()
 robot.step_update(q_0)
 
-pose_leg = robot.leg_position('FR','full')
-J_leg = robot.leg_jacobian('FR')
-print(np.round(pose_leg,4))
-print(np.round(J_leg,4))
+pose_leg = robot.leg_position('FR','pos')
+print(pose_leg)
+# J_leg = robot.leg_jacobian('FR')
+# print(np.round(pose_leg,4))
+# print(np.round(J_leg,4))
 
 
 

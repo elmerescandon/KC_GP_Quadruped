@@ -82,12 +82,15 @@ J_4 = robot.leg_jacobian_position('RL')
 P = w_1*(J_1.T).dot(J_1)  + w_2*(J_2.T).dot(J_2) # + w_3*(J_3.T).dot(J_3) + w_4*(J_4.T).dot(J_4)
 b = -2*(w_1*(J_1.T).dot(e_1_dot) + w_2*(J_2.T).dot(e_2_dot)) #+ w_3*(J_3.T).dot(e_3_dot) + w_4*(J_4.T).dot(e_4_dot))
 
-qmin = np.array([-1.4, -1.4, -2.5,
-                 -1.4, -1.4, -2.5, 
-                 -1.4, -1.4, -2.5,
-                 -1.4, -1.4, -2.5])
-qmax = -qmin
+qmax = np.array([1.04,3.92,-0.61,
+                  1.04,3.92,-0.61,
+                  1.04,3.92,-0.61,
+                  1.04,3.92,-0.61])
 
+qmin = np.array([-0.87,-0.52,-2.77,
+                  -0.87,-0.52,-2.77,
+                  -0.87,-0.52,-2.77,
+                  -0.87,-0.52,-2.77])
 
 dqmax = 10.0*np.ones((12))
 dqmin = -dqmax
@@ -105,6 +108,34 @@ upper_limits = np.minimum((qmax-q_robot[7:])/dt, dqmax)
 
 lower_limits = np.hstack((lfb, lower_limits))
 upper_limits = np.hstack((ufb, upper_limits))
+
+
+# ====================================================
+#  Solution with CVXOPT
+# ====================================================
+
+
+G = spmatrix([1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+              -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1, -1,-1,-1],
+            [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37],
+            [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12,13,14,15,16,17,18])
+
+limits = np.hstack((upper_limits,lower_limits))
+print(limits)
+
+h = matrix(limits)
+
+P = matrix(P)
+b = matrix(b)
+
+# # Solve the quadratic problem
+sol = solvers.qp(P,b,G=G,h=h)
+
+q_dot = sol['x']
+q_dot = np.array(q_dot)
+q_dot = np.resize(q_dot,(19,))
+
+print(q_dot)
 
 
 # ================================================
@@ -125,35 +156,3 @@ solver.getPrimalSolution(dq)
 print(dq)
 
 
-# ====================================================
-#  Solution with CVXOPT
-# ====================================================
-
-
-G = spmatrix([1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
-              -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1, -1,-1,-1],
-            [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37],
-            [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12,13,14,15,16,17,18])
-
-limits = np.hstack((upper_limits,-lower_limits))
-
-h = matrix(limits)
-
-P = matrix(P)
-b = matrix(b)
-
-# # Solve the quadratic problem
-sol = solvers.qp(P,b,G=G,h=h)
-
-q_dot = sol['x']
-q_dot = np.array(q_dot)
-q_dot = np.resize(q_dot,(19,))
-
-print(q_dot)
-# print(np.round(np.array(sol['x'])),5)
-# print(sol['primal objective'])
-# print(sol['status'])
-
-# a = np.array(sol['x'])
-# a = np.resize(a,(19,))
-# print(a)

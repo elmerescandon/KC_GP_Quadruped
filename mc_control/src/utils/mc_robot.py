@@ -34,6 +34,9 @@ class mini_cheetah:
         self.q = q
 
     def base_position(self):
+        return self.q[0:3] 
+    
+    def base_pose(self):
         return self.q[0:7] 
 
     # ==========================================================
@@ -166,4 +169,4 @@ class mini_cheetah:
         # The contribution in the Analytical and Geeometric velocities are the same
         J = np.zeros((7,19))
         J[0:3,0:3] = np.eye(3)
-        return J
+        return J[0:3,:]
