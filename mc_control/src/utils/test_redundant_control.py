@@ -5,7 +5,8 @@ from mc_legs import *
 from copy import copy
 from cvxopt import solvers
 from cvxopt import matrix
-
+from cvxopt import spdiag
+from cvxopt import spmatrix
 
 from qpoases import PyQProblemB as QProblemB
 from qpoases import PyOptions as Options
@@ -14,8 +15,6 @@ from qpoases import PyPrintLevel as PrintLevel
 
 # Implementation of the task-based redundant control
 # Based on the Advanced Robotics - Redundant Control class
-
-
 
 # Load Robot state
 
@@ -56,7 +55,6 @@ e_1 = robot.error_position_leg(posd_fr,'FR')
 e_2 = robot.error_position_leg(posd_rr,'RR')
 
 
-
 # Derivate the error
 # The derivative of the error is positive, since the error is calculated inversely (x_des - x) -> e_dot = e*lambda
 e_1_dot = l_1*e_1
@@ -95,8 +93,8 @@ dqmax = 10.0*np.ones((12))
 dqmin = -dqmax
 
 # Bounds for the floating base
-low = -1e1
-high = 1e1
+low = -1e6
+high = 1e6
 lfb = np.array([low, low, low, low, low, low, low])
 ufb = np.array([high, high, high, high, high, high, high])
         
@@ -109,7 +107,9 @@ lower_limits = np.hstack((lfb, lower_limits))
 upper_limits = np.hstack((ufb, upper_limits))
 
 
-
+# ================================================
+#  Solution with QPOASES
+# ===============================================
 
 # Solver
 solver = QProblemB(19)
@@ -123,18 +123,34 @@ solver.init(P, b, lower_limits, upper_limits, nWSR)
 dq = np.zeros(19)
 solver.getPrimalSolution(dq)
 print(dq)
-# G = matrix(np.vstack((-np.eye(19),np.eye(19))))
-# h = matrix(limits)
 
-# P = matrix(P)
-# b = matrix(b)
+
+# ====================================================
+#  Solution with CVXOPT
+# ====================================================
+
+
+G = spmatrix([1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+              -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1, -1,-1,-1],
+            [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37],
+            [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12,13,14,15,16,17,18])
+
+limits = np.hstack((upper_limits,-lower_limits))
+
+h = matrix(limits)
+
+P = matrix(P)
+b = matrix(b)
 
 # # Solve the quadratic problem
-# sol = solvers.qp(P,b,G=G,h=h)
-# print(P)
-# print(b)
-# print(sol)
-# print(sol['x'])
+sol = solvers.qp(P,b,G=G,h=h)
+
+q_dot = sol['x']
+q_dot = np.array(q_dot)
+q_dot = np.resize(q_dot,(19,))
+
+print(q_dot)
+# print(np.round(np.array(sol['x'])),5)
 # print(sol['primal objective'])
 # print(sol['status'])
 
