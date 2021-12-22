@@ -15,9 +15,9 @@
 
     <node type="rviz" name="rviz" pkg="rviz" args="-d $(find yobotics_description)/rviz/urdf_viewer.rviz" />
 
-    <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher">
+    <!-- <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher"> -->
     <!-- <param name="/use_gui" value="false"/>
         <rosparam param="/source_list">[yobotics/joint_states]</rosparam>  -->
-    </node>
+    <!-- </node> -->
 
 </launch>

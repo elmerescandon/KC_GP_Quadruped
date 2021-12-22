@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-
+import time
 import rospy
 from sensor_msgs.msg import JointState
 from utils.markers import *
@@ -52,12 +52,13 @@ robot.step_update(q0)
 bmarker1 = BallMarker(color['RED'])
 
 # Create the message 
+time.sleep(2)
 joints = JointState()
 joints.name = jnames 
 joints.position = q0
 joints.header.stamp = rospy.Time.now()
 pub.publish(joints)
-
+time.sleep(1)
 # Obtain actual position
 pos_fr = robot.leg_position('FR',type='pos')
 pos_rr = robot.leg_position('RR',type='pos')
@@ -85,7 +86,7 @@ T_posdrr = np.array([[1,0,0,posd_fr[0]],
 # Constants generated for the kinematic task control
 l = 5*[0.5]
 w = 5*[1.0]
-f = 100.0
+f = 1000.0
 dt = 1./f
 control = mc_controller(l, w, dt,type_c='base')
 

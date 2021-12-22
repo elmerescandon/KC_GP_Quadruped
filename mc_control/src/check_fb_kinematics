@@ -24,10 +24,10 @@ jnames = [ 'x','y','z','w','ex','ey','ez',
 
 
 # Load initial Values 
-x_b0 = np.array([0,0,0.4424,1,0,0,0])
-q_legs0 = np.array([0,0,0, # RL
-                    0,0,0, # FL
-                    0,0,0, # RR
+x_b0 = np.array([0,0,0.4424, 0.9659258,0.258819, 0, 0])
+q_legs0 = np.array([-np.pi/6,0,0, # RL
+                    -np.pi/6,0,0, # FL
+                    -np.pi/6,0,0, # RR
                     -np.pi/6,0,-np.pi/3]) # FR
 q0 = np.concatenate((x_b0,q_legs0))
 

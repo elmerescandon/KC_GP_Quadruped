@@ -26,8 +26,8 @@ jnames = ['RL_hip_joint', 'RL_thigh_joint', 'RL_calf_joint',
 q0 = np.zeros((12))
 
 # Load initial vector value from leg
-q_leg= np.zeros((3))
-
+# q_leg= np.zeros((3))
+q_leg = np.array([np.pi/8,0,-np.pi/6])
 
 # q0[0:3] = q_leg - Rear Left (RL)
 # q0[3:6] = q_leg - Front Left (FL)
@@ -51,7 +51,7 @@ rate = rospy.Rate(100)
 
 while not rospy.is_shutdown():
 	joints.header.stamp = rospy.Time.now()
-	q_leg = q_leg + 0.01 
+	# q_leg = q_leg + 0.01 
 	joints.position = q0
 	pub.publish(joints)
 	q0[9:12] = q_leg # FR 
@@ -61,5 +61,5 @@ while not rospy.is_shutdown():
 
 	leg_pos = fk_FR(q_leg)  #   fk_FL(q_leg) fk_RL(q_leg) fk_RR(q_leg)
 	bmarker1.position(leg_pos)
-
+	print(np.round(leg_pos,3))
 	rate.sleep()
